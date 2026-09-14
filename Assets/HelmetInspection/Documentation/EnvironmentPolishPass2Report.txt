@@ -1,0 +1,45 @@
+HELMET INSPECTION LAB - ENVIRONMENT POLISH PASS 2
+Completed: 2026-09-08
+Scene: Assets/HelmetInspection/Scenes/HelmetDefectInspection.unity
+
+DEFAULT HMD VIEW
+- Root cause identified: the valid INS-01 scanner and both tracked-controller fallback transforms were saved at the HMD origin before the first tracking sample.
+- Left and right untracked fallbacks now start at plausible hand positions more than 0.35 m from the camera.
+- Scanner remains unparented/grabbable, starts exactly on the existing left-hand XRSocketInteractor, and retains hand-swap and reset behavior.
+- Saved-HMD render confirms no unintended object clips into the camera.
+
+CHROME HELMETS
+- Shared triplanar Shader Graph: Metallic 0.99, Smoothness 0.95 (Roughness 0.05).
+- 128px custom cubemap captured from the actual finished room after all Pass 2 geometry was installed.
+- Both helmets use the same material and blend the table-centered room reflection probe.
+- Found markers retain high-contrast green emission.
+
+ENVIRONMENT
+- Two distinct textured diagnostic screens: helmet shell/profile schematic and QA status dashboard.
+- Both screens include scanlines, vignette, emissive material output, brushed bezels, labels, and green status LEDs.
+- START/RESET retain their original animated raised capsule caps, button scripts, colliders, hover/press flash, haptics, and audio.
+- Control panel adds a recessed brushed-metal plate, engraved border, four screws, external labels, and status LEDs.
+- Ceiling slots are resolved as a recessed linear emissive diffuser using the two existing panel-wash lights.
+- Upper-right rack is finished with solid shelves, backing, bins, liners, stored props, and identification label.
+
+PERFORMANCE / SAFETY
+- Base decorative triangles: 2,368
+- Pass 2 decorative triangles: 1,072
+- Total art-root decorative triangles: 3,440 / 5,000
+- Scene renderers: 139 / 150
+- Scene lights including disabled scanner proximity light: 6 / 6
+- Added art colliders: 0
+- DefectSet_A2 and all authored interactive collider dimensions remain unchanged.
+
+VALIDATION
+- Unity project validation: PASS, all 86 checks.
+- Six exterior hole acquisition tests: PASS.
+- Head translation lock, helmet collision, item reset, and scanner reset tests: PASS.
+- Pass 2 camera, screen, reflection, control, ceiling, rack, and budget checks: PASS.
+
+QUEST APK
+- Path: Builds/HelmetInspectionModule1.apk
+- Size: 49,931,857 bytes
+- SHA-256: 4EE94571829E6187A9BEB06D1E771DB4BAEE3DD63ACD26816ABA8A37F7C5F3FF
+- Installed successfully on Quest 3 serial 2G97C5ZH6M006J and auto-launched as org.adfl.training.helmetinspection.module1.
+- UnityPlayerGameActivity remained foreground/running after launch; filtered device logs contained no fatal, crash, missing-reference, or Unity error entries.

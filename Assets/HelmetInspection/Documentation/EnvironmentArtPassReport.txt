@@ -1,0 +1,9 @@
+HELMET INSPECTION LAB - ENVIRONMENT ART PASS
+Scene: Assets/HelmetInspection/Scenes/HelmetDefectInspection.unity
+Added batched decorative triangles: 2368
+Total renderers: 120 / 150
+Total lights including disabled scanner light: 6 / 6
+Pre-existing colliders preserved: 41; art-pass colliders: 0
+Helmet shader: triplanar chrome, Metallic 0.98, Smoothness 0.92
+Reflection: one 64px custom baked cubemap probe; no realtime probe cost
+Protected gameplay transforms, collider values, UI text, and DefectSet_A2 hash: PASS

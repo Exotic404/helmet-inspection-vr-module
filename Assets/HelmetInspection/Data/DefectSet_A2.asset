@@ -1,0 +1,159 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: be3554a27b257944495c282993eaa091, type: 3}
+  m_Name: DefectSet_A2
+  m_EditorClassIdentifier: Assembly-CSharp::HelmetInspection.DefectSet
+  referenceModel: A1_helmet.glb
+  inspectedModel: A2_defective_scan.glb
+  sourceUnits: millimeters converted to Unity meters at 0.001
+  candidateThresholdMillimeters: 2
+  defects:
+  - id: A2-D01
+    title: Large Missing-Geometry Hole (upper hole cluster, near crown)
+    category: 5
+    severity: 2
+    localPosition: {x: -0.0102, y: 0.10027, z: 0.074360006}
+    localNormal: {x: -0.10184926, y: 0.6764481, z: 0.729414}
+    markerRadius: 0.025
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 25 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 3383
+    sourceClusterSize: 50
+  - id: A2-D02
+    title: Large Missing-Geometry Hole (upper-rear hole)
+    category: 5
+    severity: 2
+    localPosition: {x: -0.07625, y: -0.01461, z: 0.098280005}
+    localNormal: {x: -0.57574886, y: -0.3443402, z: 0.74158144}
+    markerRadius: 0.026
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 26 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 1441
+    sourceClusterSize: 42
+  - id: A2-D03
+    title: Missing-Geometry Hole (adjacent to H1, crown area)
+    category: 5
+    severity: 2
+    localPosition: {x: -0.050070003, y: 0.09624, z: 0.06449}
+    localNormal: {x: -0.48041505, y: 0.62219137, z: 0.6181256}
+    markerRadius: 0.019
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 19 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 2123
+    sourceClusterSize: 37
+  - id: A2-D04
+    title: Missing-Geometry Hole (left side, rear)
+    category: 5
+    severity: 2
+    localPosition: {x: -0.11158001, y: -0.05719, z: 0.0075500007}
+    localNormal: {x: -0.7835414, y: -0.61895776, z: 0.05435294}
+    markerRadius: 0.024
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 24 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 525
+    sourceClusterSize: 34
+  - id: A2-D05
+    title: Largest Missing-Geometry Hole (front-right, most severe hole)
+    category: 5
+    severity: 2
+    localPosition: {x: 0.07823001, y: 0.07288, z: -0.06542}
+    localNormal: {x: 0.7097329, y: 0.37989342, z: -0.5932623}
+    markerRadius: 0.028
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 28 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 6224
+    sourceClusterSize: 32
+  - id: A2-D06
+    title: Missing-Geometry Hole (right side, rear)
+    category: 5
+    severity: 2
+    localPosition: {x: 0.10907, y: -0.059290003, z: 0.02155}
+    localNormal: {x: 0.7603495, y: -0.63148963, z: 0.15195195}
+    markerRadius: 0.022
+    deviationMillimeters: 0
+    inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
+      with a measured 22 mm opening radius.
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 7093
+    sourceClusterSize: 27
+  - id: A2-D07
+    title: Deep Structural Dent
+    category: 1
+    severity: 2
+    localPosition: {x: -0.1, y: 0.09, z: -0.040000003}
+    localNormal: {x: -0.63750905, y: 0.7700397, z: -0.024923954}
+    markerRadius: 0.018
+    deviationMillimeters: 16.6
+    inspectionNote: 'Measured A2-to-A1 surface deviation: 16.6 mm. This is a scan-confirmed
+      closed-surface deformation.'
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 7938
+    sourceClusterSize: 194
+  - id: A2-D08
+    title: Localized Impact Deformation
+    category: 1
+    severity: 2
+    localPosition: {x: 0.00929, y: 0.034740005, z: -0.115760006}
+    localNormal: {x: 0.09268576, y: 0.31350055, z: -0.9450538}
+    markerRadius: 0.016
+    deviationMillimeters: 9.9
+    inspectionNote: 'Measured A2-to-A1 surface deviation: 9.9 mm. This is a scan-confirmed
+      closed-surface deformation.'
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 4196
+    sourceClusterSize: 150
+  - id: A2-D09
+    title: Material Bulge
+    category: 4
+    severity: 2
+    localPosition: {x: 0.08997001, y: 0.057020005, z: 0.058160003}
+    localNormal: {x: 0.09008941, y: 0.38647535, z: 0.91788924}
+    markerRadius: 0.016
+    deviationMillimeters: 9
+    inspectionNote: 'Measured A2-to-A1 surface deviation: 9.0 mm. This is a scan-confirmed
+      closed-surface deformation.'
+    correctiveAction: Reject from service, quarantine the helmet, and escalate for
+      engineering disposition.
+    sourceVertex: 6660
+    sourceClusterSize: 209
+  - id: A2-D10
+    title: Surface Warping
+    category: 0
+    severity: 1
+    localPosition: {x: 0.028660001, y: 0.06716001, z: -0.10495}
+    localNormal: {x: 0.24137191, y: 0.4970118, z: -0.833498}
+    markerRadius: 0.013
+    deviationMillimeters: 5.5
+    inspectionNote: 'Measured A2-to-A1 surface deviation: 5.5 mm. This is a scan-confirmed
+      closed-surface deformation.'
+    correctiveAction: Place on quality hold and complete dimensional review before
+      release.
+    sourceVertex: 4958
+    sourceClusterSize: 20
