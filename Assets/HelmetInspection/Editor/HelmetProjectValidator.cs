@@ -17,6 +17,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR.Interaction.Toolkit.Interactors.Casters;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Gravity;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Movement;
 using UnityEngine.XR.Interaction.Toolkit.Locomotion.Teleportation;
@@ -154,12 +155,31 @@ namespace HelmetInspection.Editor
                 "Left-stick head-relative continuous movement is active at a comfortable 1.5-2.0 m/s, with right-stick move input unused." );
             Check(origins.Length == 1 && origins[0].GetComponent<CharacterController>() is { enabled: true },
                 "XR Origin uses an enabled CharacterController for solid room collision." );
+            var propLayer = LayerMask.NameToLayer(HeldItemLocomotionInstaller.PropLayerName);
+            var character = origins.Length == 1 ? origins[0].Origin.GetComponent<CharacterController>() : null;
+            Check(propLayer >= 0 && character != null &&
+                  (character.excludeLayers.value & (1 << propLayer)) != 0 &&
+                  UnityEngine.Object.FindObjectsByType<XRGrabInteractable>(FindObjectsInactive.Include)
+                      .Where(item => item.GetComponent<HelmetOutOfBoundsRecovery>() != null ||
+                                     item.GetComponent<InspectionScanner>() != null)
+                      .All(item => item.GetComponentsInChildren<Collider>(true)
+                          .Where(collider => !collider.isTrigger)
+                          .All(collider => collider.gameObject.layer == propLayer)),
+                "Player capsule persistently excludes solid inspection props across recentering and grabbing." );
+            Check(propLayer >= 0 && origins.Length == 1 &&
+                  origins[0].GetComponentsInChildren<XRDirectInteractor>(true)
+                      .All(item => (item.physicsLayerMask.value & (1 << propLayer)) != 0) &&
+                  origins[0].GetComponentsInChildren<SphereInteractionCaster>(true)
+                      .All(item => (item.physicsLayerMask.value & (1 << propLayer)) != 0) &&
+                  origins[0].GetComponentsInChildren<CurveInteractionCaster>(true)
+                      .All(item => (item.raycastMask.value & (1 << propLayer)) != 0) &&
+                  origins[0].GetComponentsInChildren<XRRayInteractor>(true)
+                      .All(item => (item.raycastMask.value & (1 << propLayer)) != 0),
+                "Direct hands and near/far rays can detect the inspection prop physics layer." );
             Check(origins.Length == 1 && origins[0].GetComponent<XRTrackingSpaceRecenter>() != null,
                 "XR Origin recenters stale Quest tracking coordinates on launch and long resume." );
-            Check(origins.Length == 1 && origins[0].GetComponent<XRPhysicalTranslationLock>() is
-                  { AnchoredHeadLocalPosition: var anchored } &&
-                  Vector3.Distance(anchored, new Vector3(0f, 1.68f, 0f)) < 0.001f,
-                "Physical HMD translation is locked while tracked head rotation and virtual locomotion remain active." );
+            Check(origins.Length == 1 && origins[0].GetComponent<XRPhysicalTranslationLock>() is { enabled: false },
+                "Natural 6DoF head tracking is preserved; handover protection uses discrete recentering, not continuous camera cancellation." );
             Check(UnityEngine.Object.FindObjectsByType<GravityProvider>(FindObjectsInactive.Include)
                     .Any(item => item.enabled && item.gameObject.activeInHierarchy && item.useGravity),
                 "CharacterController locomotion has active gravity and grounding." );

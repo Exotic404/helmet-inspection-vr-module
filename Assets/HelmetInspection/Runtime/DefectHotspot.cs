@@ -14,6 +14,9 @@ namespace HelmetInspection
         [SerializeField] bool isHole;
         [SerializeField, Min(0f)] float holeExteriorOffset = 0.04f;
         [SerializeField, Min(0f)] float holeScanPadding = 0.018f;
+        [SerializeField, Tooltip("Optional local-space scanner-facing normal. Zero uses the authored marker normal. " +
+            "Use only when a curved surface's measured normal does not face the exterior inspection approach.")]
+        Vector3 scannerNormalOverride;
         [SerializeField, HideInInspector] bool showEditorGizmo;
         [SerializeField] Color idleColor = new Color(0.12f, 0.78f, 0.92f, 0f);
         [SerializeField] Color foundColor = new Color(0.22f, 1f, 0.48f, 0.92f);
@@ -33,6 +36,9 @@ namespace HelmetInspection
         public float HoleScanPadding => isHole ? holeScanPadding : 0f;
         public float InspectionRadius => MarkerRadius + (isHole ? holeScanPadding : 0f);
         public Vector3 MarkerNormal => transform.forward.normalized;
+        public Vector3 ScannerNormal => scannerNormalOverride.sqrMagnitude > 0.0001f
+            ? transform.TransformDirection(scannerNormalOverride).normalized
+            : MarkerNormal;
         public float MarkerRadius
         {
             get
@@ -207,6 +213,13 @@ namespace HelmetInspection
         public void SetEditorGizmoVisible(bool value)
         {
             showEditorGizmo = value;
+        }
+
+        public void SetEditorScannerNormal(Vector3 worldNormal)
+        {
+            scannerNormalOverride = worldNormal.sqrMagnitude > 0.0001f
+                ? transform.InverseTransformDirection(worldNormal.normalized).normalized
+                : Vector3.zero;
         }
 
         void OnDrawGizmos()

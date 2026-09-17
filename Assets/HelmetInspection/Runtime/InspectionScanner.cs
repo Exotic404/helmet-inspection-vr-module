@@ -277,7 +277,7 @@ namespace HelmetInspection
         }
 
         /// <summary>Shared acquisition for beam feedback and confirmation. Uses live
-        /// transforms, excludes found/disabled targets, and resolves all ten together.</summary>
+        /// transforms, excludes found/disabled targets, and resolves all authored targets together.</summary>
         public bool TryGetScanTarget(Vector3 origin, Vector3 direction, out DefectHotspot target)
         {
             target = null;
@@ -343,7 +343,7 @@ namespace HelmetInspection
             direction.Normalize();
 
             var maximumRange = hotspot.IsHole ? Mathf.Min(scanDistance, holeBeamRange) : scanDistance;
-            if (Vector3.Dot(direction, -hotspot.MarkerNormal) < 0.1f)
+            if (Vector3.Dot(direction, -hotspot.ScannerNormal) < 0.1f)
                 return false;
             var aimRadius = Mathf.Max(minimumAimRadius, hotspot.InspectionRadius);
             var bestScore = float.PositiveInfinity;

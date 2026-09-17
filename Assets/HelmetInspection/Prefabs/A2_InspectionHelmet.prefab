@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4876850117196716283}
   - component: {fileID: 9154940447630868489}
   - component: {fileID: 4292969448364832190}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: A2_InspectionHelmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

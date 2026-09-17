@@ -8,6 +8,8 @@ namespace HelmetInspection
 {
     public sealed class TrainingSessionController : MonoBehaviour
     {
+        const int RequiredFindings = 10;
+
         [SerializeField] DefectSet defectSet;
         [SerializeField] Transform inspectedHelmet;
         [SerializeField] TMP_Text progressText;
@@ -21,9 +23,14 @@ namespace HelmetInspection
         AudioSource m_AudioSource;
         AudioClip m_ConfirmationChime;
         bool m_Started;
+        bool m_Complete;
+        int m_SessionGeneration;
 
         public bool IsStarted => m_Started;
+        public bool IsComplete => m_Complete;
         public int FoundCount => m_Found.Count;
+        public int AvailableDefectCount => defectSet != null ? defectSet.Defects.Count : hotspots.Count;
+        public int TargetCount => Mathf.Min(RequiredFindings, AvailableDefectCount);
         public DefectSet DefectSet => defectSet;
 
         void Awake()
@@ -52,7 +59,7 @@ namespace HelmetInspection
 
         public void BeginTraining()
         {
-            if (m_Started)
+            if (m_Started || TargetCount <= 0)
                 return;
 
             m_Started = true;
@@ -60,7 +67,7 @@ namespace HelmetInspection
                 startPanel.SetActive(false);
             SetHotspotsEnabled(true);
             if (objectiveText != null)
-                objectiveText.text = $"ACTIVE INSPECTION  /  FIND ALL {(defectSet != null ? defectSet.Defects.Count : hotspots.Count)} A2 DEVIATIONS";
+                objectiveText.text = $"ACTIVE INSPECTION  /  FIND ANY {TargetCount} OF {AvailableDefectCount} A2 DEVIATIONS";
             if (detailText != null)
                 detailText.text = "Aim INS-01 at A2.\nMove its glowing tip close to the shell.\nPress the trigger to confirm a finding.";
             PulseHaptics(XRNode.LeftHand, 0.25f, 0.08f);
@@ -69,7 +76,7 @@ namespace HelmetInspection
 
         public bool RegisterDefect(int index, DefectHotspot hotspot)
         {
-            if (!m_Started || defectSet == null || index < 0 || index >= defectSet.Defects.Count)
+            if (!m_Started || m_Complete || defectSet == null || index < 0 || index >= defectSet.Defects.Count)
                 return false;
 
             if (!m_Found.Add(index))
@@ -86,14 +93,23 @@ namespace HelmetInspection
             ShowDetail(defectSet.Defects[index], false);
             UpdateProgress();
 
-            if (m_Found.Count == defectSet.Defects.Count)
-                StartCoroutine(CompleteAfterFeedback());
+            if (m_Found.Count >= TargetCount)
+            {
+                // Finish immediately, before the short confirmation delay. Otherwise
+                // a second trigger or another hand could accept an eleventh finding.
+                m_Complete = true;
+                SetHotspotsEnabled(false);
+                StartCoroutine(CompleteAfterFeedback(m_SessionGeneration));
+            }
             return true;
         }
 
         public void ResetTraining()
         {
+            ++m_SessionGeneration;
             StopAllCoroutines();
+            m_Started = false;
+            m_Complete = false;
 
             // RESTART is a complete physical reset. Cancel active grabs and restore
             // every movable training prop before clearing the inspection state.
@@ -110,7 +126,6 @@ namespace HelmetInspection
                     hotspot.ResetState();
             if (completionPanel != null)
                 completionPanel.SetActive(false);
-            m_Started = false;
             if (startPanel != null)
                 startPanel.SetActive(true);
             if (objectiveText != null)
@@ -150,19 +165,22 @@ namespace HelmetInspection
         {
             if (progressText == null)
                 return;
-            var total = defectSet != null ? defectSet.Defects.Count : 10;
-            progressText.text = $"QA FINDINGS  {m_Found.Count:00} / {total:00}";
+            progressText.text = $"QA FINDINGS  {m_Found.Count:00} / {TargetCount:00}";
         }
 
-        IEnumerator CompleteAfterFeedback()
+        IEnumerator CompleteAfterFeedback(int sessionGeneration)
         {
             yield return new WaitForSeconds(0.55f);
+            // A pending completion from a previous attempt must never overwrite the
+            // UI after RESET, even if this routine is resumed by another caller.
+            if (sessionGeneration != m_SessionGeneration || !m_Started || !m_Complete)
+                yield break;
             if (completionPanel != null)
                 completionPanel.SetActive(true);
             if (objectiveText != null)
-                objectiveText.text = "INSPECTION COMPLETE  /  All deviations documented";
+                objectiveText.text = $"INSPECTION COMPLETE  /  {TargetCount} OF {AvailableDefectCount} DEVIATIONS DOCUMENTED";
             if (detailText != null)
-                detailText.text = "A2 is on quality hold.\nReview the logged defects.\nPress RESET to repeat the exercise.";
+                detailText.text = $"Inspection target reached: {TargetCount} findings.\nA2 is on quality hold.\nReview the logged defects.\nPress RESET to repeat the exercise.";
             PulseHaptics(XRNode.LeftHand, 0.7f, 0.18f);
             PulseHaptics(XRNode.RightHand, 0.7f, 0.18f);
         }

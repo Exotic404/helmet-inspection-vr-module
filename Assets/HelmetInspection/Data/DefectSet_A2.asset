@@ -22,7 +22,7 @@ MonoBehaviour:
     category: 5
     severity: 2
     localPosition: {x: -0.0102, y: 0.10027, z: 0.074360006}
-    localNormal: {x: -0.10184926, y: 0.6764481, z: 0.729414}
+    localNormal: {x: -0.10184926, y: 0.6764481, z: 0.7294139}
     markerRadius: 0.025
     deviationMillimeters: 0
     inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
@@ -36,7 +36,7 @@ MonoBehaviour:
     category: 5
     severity: 2
     localPosition: {x: -0.07625, y: -0.01461, z: 0.098280005}
-    localNormal: {x: -0.57574886, y: -0.3443402, z: 0.74158144}
+    localNormal: {x: -0.5757489, y: -0.34434023, z: 0.74158144}
     markerRadius: 0.026
     deviationMillimeters: 0
     inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
@@ -64,7 +64,7 @@ MonoBehaviour:
     category: 5
     severity: 2
     localPosition: {x: -0.11158001, y: -0.05719, z: 0.0075500007}
-    localNormal: {x: -0.7835414, y: -0.61895776, z: 0.05435294}
+    localNormal: {x: -0.7835414, y: -0.61895776, z: 0.054353}
     markerRadius: 0.024
     deviationMillimeters: 0
     inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
@@ -78,7 +78,7 @@ MonoBehaviour:
     category: 5
     severity: 2
     localPosition: {x: 0.07823001, y: 0.07288, z: -0.06542}
-    localNormal: {x: 0.7097329, y: 0.37989342, z: -0.5932623}
+    localNormal: {x: 0.70973283, y: 0.3798934, z: -0.5932625}
     markerRadius: 0.028
     deviationMillimeters: 0
     inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
@@ -92,7 +92,7 @@ MonoBehaviour:
     category: 5
     severity: 2
     localPosition: {x: 0.10907, y: -0.059290003, z: 0.02155}
-    localNormal: {x: 0.7603495, y: -0.63148963, z: 0.15195195}
+    localNormal: {x: 0.7603495, y: -0.6314897, z: 0.15195197}
     markerRadius: 0.022
     deviationMillimeters: 0
     inspectionNote: Open-boundary mesh inspection confirms missing shell geometry
@@ -106,7 +106,7 @@ MonoBehaviour:
     category: 1
     severity: 2
     localPosition: {x: -0.1, y: 0.09, z: -0.040000003}
-    localNormal: {x: -0.63750905, y: 0.7700397, z: -0.024923954}
+    localNormal: {x: -0.63750905, y: 0.7700397, z: -0.02492413}
     markerRadius: 0.018
     deviationMillimeters: 16.6
     inspectionNote: 'Measured A2-to-A1 surface deviation: 16.6 mm. This is a scan-confirmed
@@ -120,7 +120,7 @@ MonoBehaviour:
     category: 1
     severity: 2
     localPosition: {x: 0.00929, y: 0.034740005, z: -0.115760006}
-    localNormal: {x: 0.09268576, y: 0.31350055, z: -0.9450538}
+    localNormal: {x: 0.09268579, y: 0.31350064, z: -0.9450538}
     markerRadius: 0.016
     deviationMillimeters: 9.9
     inspectionNote: 'Measured A2-to-A1 surface deviation: 9.9 mm. This is a scan-confirmed
@@ -133,7 +133,7 @@ MonoBehaviour:
     title: Material Bulge
     category: 4
     severity: 2
-    localPosition: {x: 0.08997001, y: 0.057020005, z: 0.058160003}
+    localPosition: {x: 0.0944, y: 0.058, z: 0.06}
     localNormal: {x: 0.09008941, y: 0.38647535, z: 0.91788924}
     markerRadius: 0.016
     deviationMillimeters: 9
@@ -148,7 +148,7 @@ MonoBehaviour:
     category: 0
     severity: 1
     localPosition: {x: 0.028660001, y: 0.06716001, z: -0.10495}
-    localNormal: {x: 0.24137191, y: 0.4970118, z: -0.833498}
+    localNormal: {x: 0.24137188, y: 0.49701175, z: -0.833498}
     markerRadius: 0.013
     deviationMillimeters: 5.5
     inspectionNote: 'Measured A2-to-A1 surface deviation: 5.5 mm. This is a scan-confirmed
@@ -157,3 +157,31 @@ MonoBehaviour:
       release.
     sourceVertex: 4958
     sourceClusterSize: 20
+  - id: A2-D11
+    title: missaligment hole
+    category: 5
+    severity: 0
+    localPosition: {x: -0.0118, y: 0.0714, z: 0.101}
+    localNormal: {x: -0.10184926, y: 0.6764481, z: 0.7294139}
+    markerRadius: 0.025
+    deviationMillimeters: 0
+    inspectionNote: Manually authored A2 inspection finding. Compare this location
+      against the reference helmet; no measured deviation has been assigned.
+    correctiveAction: Place the helmet on quality hold and document this independent
+      finding before release.
+    sourceVertex: -1
+    sourceClusterSize: 0
+  - id: A2-D12
+    title: Missaligment hole
+    category: 5
+    severity: 0
+    localPosition: {x: -0.0462, y: 0.0842, z: -0.0826}
+    localNormal: {x: -0.42796972, y: 0.48946393, z: -0.75978094}
+    markerRadius: 0.025
+    deviationMillimeters: 0
+    inspectionNote: Manually authored A2 inspection finding. Compare this location
+      against the reference helmet; no measured deviation has been assigned.
+    correctiveAction: Place the helmet on quality hold and document this independent
+      finding before release.
+    sourceVertex: -1
+    sourceClusterSize: 0

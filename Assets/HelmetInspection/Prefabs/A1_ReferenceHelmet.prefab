@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8150567364823291809}
   - component: {fileID: 1460375033618989634}
   - component: {fileID: 1851991172900918944}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: A1_ReferenceHelmet
   m_TagString: Untagged
   m_Icon: {fileID: 0}

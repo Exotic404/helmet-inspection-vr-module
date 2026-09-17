@@ -1,5 +1,6 @@
 using Unity.XR.CoreUtils;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit.Locomotion;
 
 namespace HelmetInspection
 {
@@ -19,6 +20,7 @@ namespace HelmetInspection
 
         Transform m_CameraOffset;
         Transform m_TrackedCamera;
+        XRBodyTransformer m_BodyTransformer;
 
         public Vector3 AnchoredHeadLocalPosition => anchoredHeadLocalPosition;
 
@@ -27,10 +29,23 @@ namespace HelmetInspection
         void OnEnable()
         {
             ResolveReferences();
+            m_BodyTransformer = GetComponentInChildren<XRBodyTransformer>(true);
+            if (m_BodyTransformer != null)
+                m_BodyTransformer.beforeApplyTransformations += BeforeLocomotion;
             Application.onBeforeRender += ApplyTranslationLock;
         }
 
-        void OnDisable() => Application.onBeforeRender -= ApplyTranslationLock;
+        void OnDisable()
+        {
+            if (m_BodyTransformer != null)
+                m_BodyTransformer.beforeApplyTransformations -= BeforeLocomotion;
+            Application.onBeforeRender -= ApplyTranslationLock;
+        }
+
+        // XRI derives the collision capsule's center and height from the camera
+        // immediately before Move. Correct the latest tracked translation first;
+        // a LateUpdate-only lock lets physics use a different head pose to rendering.
+        void BeforeLocomotion(XRBodyTransformer _) => ApplyTranslationLock();
 
         void LateUpdate() => ApplyTranslationLock();
 

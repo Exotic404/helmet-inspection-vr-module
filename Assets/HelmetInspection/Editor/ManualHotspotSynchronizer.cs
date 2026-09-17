@@ -22,6 +22,8 @@ namespace HelmetInspection.Editor
         [MenuItem("Helmet Inspection/Synchronize Manually Authored Hotspots")]
         public static void Synchronize()
         {
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return;
             var scene = EditorSceneManager.OpenScene(ScenePath, OpenSceneMode.Single);
             var session = UnityEngine.Object.FindFirstObjectByType<TrainingSessionController>(FindObjectsInactive.Include);
             var defectSet = AssetDatabase.LoadAssetAtPath<DefectSet>(DefectSetPath);
@@ -44,7 +46,8 @@ namespace HelmetInspection.Editor
             {
                 var hotspot = hotspots[i];
                 var title = TitleFromName(hotspot.name);
-                var exact = existing.FirstOrDefault(item => string.Equals(item.title, title, StringComparison.Ordinal));
+                var id = $"A2-D{NumberFromName(hotspot.name):00}";
+                var exact = existing.FirstOrDefault(item => string.Equals(item.id, id, StringComparison.Ordinal));
                 var sphere = hotspot.GetComponent<SphereCollider>();
                 if (sphere == null)
                     throw new InvalidOperationException($"{hotspot.name} is missing its SphereCollider.");
@@ -53,42 +56,50 @@ namespace HelmetInspection.Editor
                 var serializedHotspot = new SerializedObject(hotspot);
                 serializedHotspot.FindProperty("defectIndex").intValue = i;
                 serializedHotspot.FindProperty("session").objectReferenceValue = session;
-                var ownHalo = hotspot.GetComponentsInChildren<MeshRenderer>(true)
-                    .FirstOrDefault(item => item.name.IndexOf("Halo", StringComparison.OrdinalIgnoreCase) >= 0);
+                // Duplicated hotspots retain their authored decal, hole type and accessibility
+                // settings. A title is not an identity (two holes can have the same title).
+                var ownHalo = serializedHotspot.FindProperty("haloRenderer").objectReferenceValue as Renderer;
+                if (ownHalo == null || !ownHalo.transform.IsChildOf(hotspot.transform))
+                    ownHalo = hotspot.GetComponentsInChildren<MeshRenderer>(true)
+                        .FirstOrDefault(item => item.name.IndexOf("Halo", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                                item.name.IndexOf("Rim", StringComparison.OrdinalIgnoreCase) >= 0);
                 if (ownHalo == null)
                     throw new InvalidOperationException($"{hotspot.name} is missing its own halo renderer.");
                 serializedHotspot.FindProperty("haloRenderer").objectReferenceValue = ownHalo;
-                serializedHotspot.FindProperty("isHole").boolValue = exact != null && exact.IsHole;
-                serializedHotspot.FindProperty("idleColor").colorValue = new Color(0.12f, 0.78f, 0.92f, 0f);
-                serializedHotspot.FindProperty("foundColor").colorValue = new Color(0.22f, 1f, 0.48f, 1f);
+                var isHole = serializedHotspot.FindProperty("isHole").boolValue;
                 serializedHotspot.ApplyModifiedPropertiesWithoutUndo();
+                // A cloned hole moved to the opposite side can retain its old inward
+                // direction. Only repair unmeasured manual additions with invalid facing;
+                // measured defects and deliberately outward authored normals stay intact.
+                if (isHole && (exact == null || exact.sourceVertex < 0))
+                    RepairInwardManualHoleFacing(hotspot);
                 ownHalo.enabled = false;
                 EditorUtility.SetDirty(sphere);
                 EditorUtility.SetDirty(ownHalo);
 
-                hotspot.name = $"A2-D{i + 1:00} - {title}";
                 var normal = (hotspot.transform.localRotation * Vector3.forward).normalized;
                 records.Add(new DefectRecord
                 {
-                    id = $"A2-D{i + 1:00}",
+                    id = id,
                     title = title,
-                    category = exact?.category ?? DefectCategory.LocalDeformation,
+                    category = isHole ? DefectCategory.MissingGeometryHole :
+                        exact != null && !exact.IsHole ? exact.category : DefectCategory.LocalDeformation,
                     severity = exact?.severity ?? DefectSeverity.Advisory,
                     localPosition = hotspot.transform.localPosition,
                     localNormal = normal.sqrMagnitude > 0.5f ? normal : Vector3.up,
                     markerRadius = sphere.radius,
-                    deviationMillimeters = exact?.deviationMillimeters ?? (2.1f + (i % 5) * 0.1f),
+                    deviationMillimeters = exact?.deviationMillimeters ?? 0f,
                     inspectionNote = exact?.inspectionNote ??
-                        "Manually authored A2 inspection finding. Its marker is attached directly to the helmet and follows the shell while handled.",
+                        "Manually authored A2 inspection finding. Compare this location against the reference helmet; no measured deviation has been assigned.",
                     correctiveAction = exact?.correctiveAction ??
-                        "Place the helmet on quality hold and document this independent surface finding before release.",
+                        "Place the helmet on quality hold and document this independent finding before release.",
                     sourceVertex = exact?.sourceVertex ?? -1,
-                    sourceClusterSize = exact?.sourceClusterSize ?? 2
+                    sourceClusterSize = exact?.sourceClusterSize ?? 0
                 });
                 EditorUtility.SetDirty(hotspot);
             }
 
-            defectSet.SetEditorData(2f, records);
+            defectSet.SetEditorData(defectSet.CandidateThresholdMillimeters, records);
             EditorUtility.SetDirty(defectSet);
 
             var serializedSession = new SerializedObject(session);
@@ -99,20 +110,13 @@ namespace HelmetInspection.Editor
             serializedSession.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(session);
 
-            var buttons = UnityEngine.Object.FindObjectsByType<MechanicalTrainingButtonBase>(
-                FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (var button in buttons)
-            {
-                button.AlignInteractionColliderToVisibleCap();
-                EditorUtility.SetDirty(button.GetComponent<BoxCollider>());
-            }
-
             foreach (var text in UnityEngine.Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None))
             {
                 if (text.name == "Intro Body")
-                    text.text = Regex.Replace(text.text, @"Log all \d+ findings", $"Log all {hotspots.Length} findings");
+                    text.text = Regex.Replace(text.text, @"Log (?:all \d+|any \d+ of \d+) findings",
+                        $"Log any {session.TargetCount} of {hotspots.Length} findings");
                 else if (text.name == "Progress")
-                    text.text = $"QA FINDINGS  00 / {hotspots.Length:00}";
+                    text.text = $"QA FINDINGS  00 / {session.TargetCount:00}";
                 EditorUtility.SetDirty(text);
             }
 
@@ -125,8 +129,37 @@ namespace HelmetInspection.Editor
             var uniqueIndices = hotspots.Select(item => item.DefectIndex).Distinct().Count();
             if (uniqueIndices != hotspots.Length || defectSet.Defects.Count != hotspots.Length)
                 throw new InvalidOperationException("Hotspot synchronization did not produce a one-to-one scene/data mapping.");
-            Debug.Log($"[HotspotSync] Synchronized {hotspots.Length} independent defects, hid undiscovered halos, " +
-                      $"and aligned {buttons.Length} button hitboxes without changing manual transforms.");
+            Debug.Log($"[HotspotSync] Synchronized {hotspots.Length} independent defects without changing " +
+                      "authored positions, sizes, button hitboxes, or the environment.");
+        }
+
+        static void RepairInwardManualHoleFacing(DefectHotspot hotspot)
+        {
+            var body = hotspot.GetComponentInParent<Rigidbody>();
+            if (body == null)
+                throw new InvalidOperationException($"{hotspot.name} is not attached to a helmet rigidbody.");
+            var shell = body.GetComponentsInChildren<Collider>(true)
+                .Where(item => !item.isTrigger && item.attachedRigidbody == body)
+                .OrderByDescending(item => item.bounds.size.sqrMagnitude).FirstOrDefault();
+            if (shell == null)
+                throw new InvalidOperationException($"{hotspot.name} has no solid helmet collider.");
+            var outward = (hotspot.MeasuredCenter - shell.bounds.center).normalized;
+            if (outward.sqrMagnitude < 0.5f)
+                throw new InvalidOperationException($"{hotspot.name} is at the helmet center, not on its surface.");
+            var facing = Vector3.Dot(hotspot.MarkerNormal, outward);
+            if (facing > 0.1f)
+                return;
+            hotspot.transform.rotation = Quaternion.FromToRotation(hotspot.MarkerNormal, outward) * hotspot.transform.rotation;
+            EditorUtility.SetDirty(hotspot.transform);
+            Debug.Log($"[HotspotSync] Corrected inward scan direction for {hotspot.name} " +
+                      $"(outward alignment was {facing:F3}); its position and radius are unchanged.");
+        }
+
+        // Batch entry point: omit -quit; the Play Mode verifier exits after its checks.
+        public static void SynchronizeAndVerify()
+        {
+            Synchronize();
+            HeldItemLocomotionVerifier.Verify();
         }
 
         static int NumberFromName(string objectName)

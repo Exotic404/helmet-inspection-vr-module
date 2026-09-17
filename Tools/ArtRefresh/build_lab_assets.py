@@ -5,6 +5,7 @@ All design coordinates below use Unity's X right, Y up, Z forward convention.
 Exports GLB for interchange plus a lossless Unity-coordinate mesh/material JSON.
 """
 import bpy
+import bmesh
 import json
 import math
 import sys
@@ -208,7 +209,30 @@ def make_lab():
 
     # A properly engineered bench: radiused perimeter, thin inlaid top, feet,
     # structural uprights and accessible instrument fascia.
-    box('Inspection bench beveled body', (0, .793, .60), (1.66, .114, .86), navy, .037, 3)
+    bench_body = box('Inspection bench beveled body', (0, .793, .60), (1.66, .114, .86), navy, .037, 3)
+    # The inset surface below covers this entire flat face at the same Y=.85.
+    # Keeping both faces produces severe depth fighting in the Quest's view.
+    # Remove only the hidden flat face; retain every bevel, side, and dimension.
+    body_mesh = bmesh.new()
+    try:
+        body_mesh.from_mesh(bench_body.data)
+        hidden_top = [face for face in body_mesh.faces
+                      if all(abs((bench_body.matrix_world @ v.co).z - .85) < 1e-6
+                             for v in face.verts)]
+        if len(hidden_top) != 1 or len(hidden_top[0].verts) != 4:
+            raise RuntimeError('Inspection bench hidden top face changed; review table geometry')
+        expected_corners = {(round(x, 6), round(z, 6))
+                            for x in (-.793, .793) for z in (.207, .993)}
+        actual_corners = {(round((bench_body.matrix_world @ v.co).x, 6),
+                           round((bench_body.matrix_world @ v.co).y, 6))
+                          for v in hidden_top[0].verts}
+        if actual_corners != expected_corners:
+            raise RuntimeError('Inspection bench top is no longer fully covered by the inset')
+        bmesh.ops.delete(body_mesh, geom=hidden_top, context='FACES_ONLY')
+        body_mesh.to_mesh(bench_body.data)
+        bench_body.data.update()
+    finally:
+        body_mesh.free()
     box('Inspection bench aluminum surface', (0, .842, .60), (1.60, .016, .80), alloy, .016, 3)
     box('Inspection bench front bumper', (0, .770, .158), (1.43, .026, .020), graphite, .009)
     box('Inspection fascia inset', (0, .814, .167), (1.27, .037, .007), graphite, .004)
