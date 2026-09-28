@@ -251,9 +251,13 @@ namespace HelmetInspection.Editor
 
             var buttons = UnityEngine.Object.FindObjectsByType<MechanicalTrainingButtonBase>(FindObjectsInactive.Include);
             Check(buttons.Length == 2 && GameObject.Find("Shared Recessed Control Plinth") != null,
-                "BEGIN and RESTART are mechanical 3D buttons mounted on one shared plinth." );
-            Check(buttons.All(item => item.transform.Find("Raised 3D Button Cap - 18mm") != null),
-                "Both controls have raised rounded button caps." );
+                "START and RESTART are mechanical 3D buttons mounted on one shared plinth." );
+            Check(buttons.All(item =>
+            {
+                var renderer = new SerializedObject(item).FindProperty("capRenderer").objectReferenceValue as Renderer;
+                return renderer != null && renderer.enabled && renderer.transform.IsChildOf(item.transform) &&
+                       renderer.GetComponent<MeshFilter>()?.sharedMesh != null;
+            }), "Both controls reference visible, independently animated button cap meshes." );
 
             var scanner = UnityEngine.Object.FindFirstObjectByType<InspectionScanner>(FindObjectsInactive.Include);
             var scannerBody = scanner != null ? scanner.transform.Find("Tapered Charcoal Scanner Body") : null;
