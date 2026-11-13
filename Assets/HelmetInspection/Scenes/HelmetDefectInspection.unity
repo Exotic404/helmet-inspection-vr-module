@@ -5254,9 +5254,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Find dimensional defects
-
-    in the A2 helmet'
+  m_text: Helmet inspection
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 123508988}
@@ -5990,7 +5988,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: QUALITY ASSURANCE TRAINING
+  m_text: LISTEN AND FOLLOW
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 1353222543}
@@ -9327,23 +9325,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'A1 is the approved reference.
-
-    A2 is the suspect scan.
-
-
-    1  Compare
-    both shell profiles
-
-    2  Aim INS-01 at A2
-
-    3  Press the scanner trigger
-
-    4 
-    Log any 10 of 12 findings
-
-
-    Press START to start.'
+  m_text: Welcome. Compare the reference helmet, A one, with the scan, A two.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 1447317566}
@@ -13714,6 +13696,7 @@ GameObject:
   - component: {fileID: 1383319423}
   - component: {fileID: 1383319422}
   - component: {fileID: 1383319424}
+  - component: {fileID: 1383319425}
   m_Layer: 0
   m_Name: Training Session Controller
   m_TagString: Untagged
@@ -13740,6 +13723,7 @@ MonoBehaviour:
   objectiveText: {fileID: 1478929999}
   startPanel: {fileID: 2038408571}
   completionPanel: {fileID: 374275888}
+  narration: {fileID: 1383319425}
   hotspots:
   - {fileID: 982468242}
   - {fileID: 390554837}
@@ -13781,6 +13765,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HelmetInspection.QuestRuntimeSettings
   targetFrameRate: 90
+--- !u!114 &1383319425
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1383319421}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5f03d830956a68419c65db1e89c3c5f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HelmetInspection.LessonNarration
+  instructionText: {fileID: 923963029}
+  detailText: {fileID: 1586173588}
+  completionText: {fileID: 1516314709}
+  clips:
+  - {fileID: 8300000, guid: 89b2fe989b80f024bb25f21f4e1e465b, type: 3}
+  - {fileID: 8300000, guid: 816b2776d02fe924cb6fc611d3f85b59, type: 3}
+  - {fileID: 8300000, guid: 6fefb0ecd62d0ab4fb02d7663b275a1d, type: 3}
+  - {fileID: 8300000, guid: ecc00c55ed5ccfd40b87205c7ebbd1a9, type: 3}
+  - {fileID: 8300000, guid: 169a3f312be562e439b7f75d1132509e, type: 3}
+  - {fileID: 8300000, guid: 9318806b8127e3b43a2f66cd036fafef, type: 3}
+  - {fileID: 8300000, guid: 4644b0e9eae64f345bb075678453e8c2, type: 3}
+  - {fileID: 8300000, guid: 55c3a1c47ccd7bb439f27c67f76a2641, type: 3}
+  - {fileID: 8300000, guid: 232cd28509490aa448e6194e86f19a1b, type: 3}
 --- !u!1 &1392308207
 GameObject:
   m_ObjectHideFlags: 0
@@ -14802,9 +14811,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'INSPECTION COMPLETE
-
-    A2 placed on quality hold'
+  m_text: Welcome. Compare the reference helmet, A one, with the scan, A two.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2129878462}
@@ -15443,12 +15450,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Press START.
-
-    Then inspect A2 with the scanner.
-
-    Compare it against
-    reference helmet A1.'
+  m_text: Welcome. Compare the reference helmet, A one, with the scan, A two.
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 853103079}

@@ -17,6 +17,7 @@ namespace HelmetInspection
         [SerializeField] TMP_Text objectiveText;
         [SerializeField] GameObject startPanel;
         [SerializeField] GameObject completionPanel;
+        [SerializeField] LessonNarration narration;
         [SerializeField] List<DefectHotspot> hotspots = new List<DefectHotspot>();
 
         readonly HashSet<int> m_Found = new HashSet<int>();
@@ -57,6 +58,11 @@ namespace HelmetInspection
                 detailText.text = "Press START.\nThen inspect A2 with the scanner.\nCompare it against reference helmet A1.";
         }
 
+        void Start()
+        {
+            if (narration != null) narration.PlayWelcome();
+        }
+
         public void BeginTraining()
         {
             if (m_Started || TargetCount <= 0)
@@ -64,7 +70,7 @@ namespace HelmetInspection
 
             m_Started = true;
             if (startPanel != null)
-                startPanel.SetActive(false);
+                startPanel.SetActive(narration != null);
             SetHotspotsEnabled(true);
             if (objectiveText != null)
                 objectiveText.text = $"ACTIVE INSPECTION  /  FIND ANY {TargetCount} OF {AvailableDefectCount} A2 DEVIATIONS";
@@ -72,6 +78,7 @@ namespace HelmetInspection
                 detailText.text = "Aim INS-01 at A2.\nMove its glowing tip close to the shell.\nPress the trigger to confirm a finding.";
             PulseHaptics(XRNode.LeftHand, 0.25f, 0.08f);
             PulseHaptics(XRNode.RightHand, 0.25f, 0.08f);
+            if (narration != null) narration.PlayInspection();
         }
 
         public bool RegisterDefect(int index, DefectHotspot hotspot)
@@ -87,11 +94,13 @@ namespace HelmetInspection
 
             if (hotspot != null)
                 hotspot.MarkFound();
-            m_AudioSource.PlayOneShot(m_ConfirmationChime, 0.65f);
+            if (narration == null) m_AudioSource.PlayOneShot(m_ConfirmationChime, 0.65f);
             PulseHaptics(XRNode.LeftHand, 0.45f, 0.12f);
             PulseHaptics(XRNode.RightHand, 0.25f, 0.08f);
             ShowDetail(defectSet.Defects[index], false);
             UpdateProgress();
+
+            if (narration != null) narration.DefectLogged();
 
             if (m_Found.Count >= TargetCount)
             {
@@ -134,6 +143,7 @@ namespace HelmetInspection
                 detailText.text = "Press START.\nThen inspect A2 with the scanner.\nCompare it against reference helmet A1.";
             SetHotspotsEnabled(false);
             UpdateProgress();
+            if (narration != null) narration.ResetGuide();
         }
 
         void SetHotspotsEnabled(bool value)
@@ -145,7 +155,7 @@ namespace HelmetInspection
 
         void ShowDetail(DefectRecord defect, bool alreadyFound)
         {
-            if (detailText == null)
+            if (detailText == null || narration != null)
                 return;
 
             var state = alreadyFound ? "ALREADY LOGGED" : "DEFECT CONFIRMED";
@@ -171,6 +181,8 @@ namespace HelmetInspection
         IEnumerator CompleteAfterFeedback(int sessionGeneration)
         {
             yield return new WaitForSeconds(0.55f);
+            while (narration != null && narration.IsLogging)
+                yield return null;
             // A pending completion from a previous attempt must never overwrite the
             // UI after RESET, even if this routine is resumed by another caller.
             if (sessionGeneration != m_SessionGeneration || !m_Started || !m_Complete)
@@ -180,9 +192,10 @@ namespace HelmetInspection
             if (objectiveText != null)
                 objectiveText.text = $"INSPECTION COMPLETE  /  {TargetCount} OF {AvailableDefectCount} DEVIATIONS DOCUMENTED";
             if (detailText != null)
-                detailText.text = $"Inspection target reached: {TargetCount} findings.\nA2 is on quality hold.\nReview the logged defects.\nPress RESET to repeat the exercise.";
+                detailText.text = $"Inspection target reached: {TargetCount} findings.\nA2 was put on hold.\nReview the logged defects.\nPress RESET to repeat the exercise.";
             PulseHaptics(XRNode.LeftHand, 0.7f, 0.18f);
             PulseHaptics(XRNode.RightHand, 0.7f, 0.18f);
+            if (narration != null) narration.PlayCompletion();
         }
 
         static void PulseHaptics(XRNode node, float amplitude, float duration)

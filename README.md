@@ -6,12 +6,16 @@ A room-scale Meta Quest 3 training application for visually comparing a referenc
 
 - Open this folder with Unity `6000.5.7f1`.
 - The editor startup repair opens `Assets/HelmetInspection/Scenes/HelmetDefectInspection.unity` and also makes it the Play Mode start scene. If Unity restores an old temporary backup, use **Helmet Inspection > Repair Project and Open Training Scene**.
-- Put on the Quest 3 through Quest Link for Play Mode, or use **Helmet Inspection > Build Quest Development APK** for a headset build.
+- Put on the Quest 3 through Quest Link for Play Mode, or use **Helmet Inspection > Narration > Build Narrated Quest APK** for a headset build.
 - Without a headset, press Play to use the editor-only XR Interaction Simulator. Press `Tab` to cycle control modes; use `[` for the left controller, `]` for the right controller, or both keys for both controllers. The simulator shows its remaining mouse/keyboard controls on screen and is excluded from Android builds.
 - Squeeze grip to pick up either helmet. The left wrist carries the inspection scanner; if you grab it with the other hand, the trigger follows that hand. Aim at A2 and squeeze the scanner hand's trigger. You can hold the trigger while settling your aim; release before confirming the next defect. Use the right stick for 30-degree snap turns. Press the right controller secondary button to recenter.
-- Aim at the green **START** button beneath the two instrument displays and squeeze the controller grip. Find any **10 of the 12 defects**, then review the measurements and disposition guidance on the wall display. The red **RESTART** button clears the session and returns both helmets and the scanner to their homes, including held items. The new Blender-built controls depress, click, play distinct confirmation tones, and provide controller feedback. See [ArtSource/SESSION_CONTROLS.md](ArtSource/SESSION_CONTROLS.md) for their editable source and verification commands.
+- Aim at the green **START** button beneath the two instrument displays and squeeze the controller grip. Follow the spoken prompts and log any **10 of the 12 defects**. Both instruction screens follow the narration. The red **RESTART** button clears the session and returns both helmets and the scanner to their homes, including held items. The Blender-built controls depress, click, play distinct confirmation tones, and provide controller feedback. See [ArtSource/SESSION_CONTROLS.md](ArtSource/SESSION_CONTROLS.md) for their editable source and verification commands.
 
 ## Current artwork: Metrology Studio
+
+Module 1 now includes offline Jenny Neural narration at normal speed and pitch. The existing instruction screens show the current spoken sentence. Each accepted scan says only **Defect logged.**; duplicate scans are silent. A scan briefly pauses the instructions, and completion waits for the final confirmation. RESTART cancels pending speech and resets the lesson.
+
+Use **Helmet Inspection > Narration > Build Narrated Quest APK** for the narrated build. This preserves the current twelve authored defects and ten-finding target. Run **Helmet Inspection > Narration > Verify Live Narration** for the narration lifecycle checks. See [headset installation instructions](INSTALL_APK.md) and [voice generation source](Tools/Narration/README.md).
 
 The saved scene contains the Blender-built lab and precision scanner, metallic-red helmet finish, and scanner reliability fixes. Original helmet geometry and measured defect data are unchanged. See [ArtSource/ART_REFRESH.md](ArtSource/ART_REFRESH.md) for editable source files, verification, and review images.
 
